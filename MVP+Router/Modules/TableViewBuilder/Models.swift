@@ -12,8 +12,10 @@ final class TableViewCellModel {
     var onFill: ((UITableViewCell) -> Void)?
     var onSelect: (() -> Void)?
     
-    init(identifier: String) {
+    init(identifier: String, onFill: ((UITableViewCell) -> Void)? = nil, onSelect: (() -> Void)? = nil) {
         self.identifier = identifier
+        self.onFill = onFill
+        self.onSelect = onSelect
     }
 }
 

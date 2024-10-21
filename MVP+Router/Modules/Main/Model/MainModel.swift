@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct CartModel {
+    var imageProduct: String
+    var nameProduct: String
+    var priceProduct: String
+}
