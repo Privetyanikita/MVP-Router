@@ -14,10 +14,17 @@ enum NetworkError: Error {
     case decodingError(Error)
 }
 
-struct NetworkLayer {
-    static let shared = NetworkLayer()
+protocol NetworkServiceProtocol {
+    func fetchProducts(completion: @escaping (Result<[Product], NetworkError>) -> Void)
+    func fetchProductDetails(id: Int, completion: @escaping (Result<Product, NetworkError>) -> Void)
+}
+
+final class NetworkService: NetworkServiceProtocol {
+    private let urlSession: URLSession
     
-    private init() {}
+    init(urlSession: URLSession = .shared) {
+        self.urlSession = urlSession
+    }
     
     func fetchProducts(completion: @escaping (Result<[Product], NetworkError>) -> Void) {
         guard let url = createURL(for: .getProducts) else {
@@ -39,7 +46,7 @@ struct NetworkLayer {
     }
     
     private func performRequest<T: Decodable>(with request: URLRequest, completion: @escaping (Result<T, NetworkError>) -> Void) {
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        urlSession.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(.transportError(error)))
                 return

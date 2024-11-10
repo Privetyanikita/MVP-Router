@@ -9,7 +9,7 @@ import Foundation
 
 enum EndPoint {
     case getProducts
-    case getProductsDetails(id: Int)
+    case getProductsDetails(id: Int) // ручка - сленг 
     
     
     var path: String {

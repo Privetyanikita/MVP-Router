@@ -21,9 +21,9 @@ final class CartViewCell: UITableViewCell {
     
     private let productImageView: UIImageView = {
         let element = UIImageView()
-        element.contentMode = .scaleAspectFit
-        element.clipsToBounds = true
+        element.contentMode = .scaleAspectFill
         element.backgroundColor = .clear
+        element.clipsToBounds = true
         return element
     }()
     
@@ -31,13 +31,14 @@ final class CartViewCell: UITableViewCell {
         let element = UILabel()
         element.textColor = .white
         element.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        element.numberOfLines = 3
         return element
     }()
     
     private let priceProductLabel: UILabel = {
         let element = UILabel()
-        element.textColor = .green
-        element.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        element.textColor = .white
+        element.font = UIFont.systemFont(ofSize: 14, weight: .heavy)
         return element
     }()
     
@@ -60,8 +61,8 @@ final class CartViewCell: UITableViewCell {
     func configure(with model: Product) {
         productImageView.kf.indicatorType = .activity
         productImageView.kf.setImage(with: URL(string: model.image))
-        nameProductLabel.text = "\(model.title)$"
-        priceProductLabel.text = String(model.price)
+        nameProductLabel.text = model.title
+        priceProductLabel.text = String(model.price) + "$"
     }
 }
 
@@ -76,8 +77,8 @@ extension CartViewCell {
         }
         
         productImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.top.equalToSuperview()
+            make.leading.equalTo(viewForCell.snp.leading)
+            make.top.equalTo(viewForCell.snp.top)
             make.bottom.equalTo(viewForCell.snp.bottom)
             make.width.equalTo(150)
         }
