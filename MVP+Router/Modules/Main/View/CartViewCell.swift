@@ -31,7 +31,7 @@ final class CartViewCell: UITableViewCell {
         let element = UILabel()
         element.textColor = .white
         element.font = UIFont.systemFont(ofSize: 14, weight: .regular)
-        element.numberOfLines = 3
+        element.numberOfLines = 5
         return element
     }()
     
@@ -84,7 +84,7 @@ extension CartViewCell {
         }
         
         nameProductLabel.snp.makeConstraints { make in
-            make.top.equalTo(viewForCell.snp.top).offset(19)
+            make.top.equalTo(viewForCell.snp.top).offset(10)
             make.leading.equalTo(productImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview().inset(54)
         }
