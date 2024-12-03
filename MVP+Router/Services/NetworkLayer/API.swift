@@ -9,5 +9,5 @@ import Foundation
 
 struct API {
     static let scheme = "https"
-    static let host = "fakestoreapi.com"
+    static let host = "api.escuelajs.co"
 }

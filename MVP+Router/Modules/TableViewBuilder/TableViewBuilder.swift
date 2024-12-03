@@ -7,11 +7,17 @@
 
 import UIKit
 
-class TableViewBuilder:NSObject, UITableViewDelegate, UITableViewDataSource {
+protocol TableViewBuilderDelegate: AnyObject {
+    func didScrollToEnd()
+}
+
+final class TableViewBuilder:NSObject, UITableViewDelegate, UITableViewDataSource {
         
     private weak var tableView:UITableView?
+    weak var delegate: TableViewBuilderDelegate?
     var sections: [TableViewSectionModel] = []
     
+    //MARK: - Init
     init(tableView: UITableView) {
         self.tableView = tableView
         super.init()
@@ -41,4 +47,13 @@ class TableViewBuilder:NSObject, UITableViewDelegate, UITableViewDataSource {
         return sections[section].header
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.size.height
+
+        if offsetY > contentHeight - frameHeight - 200 {
+            delegate?.didScrollToEnd()
+        }
+    }
 }

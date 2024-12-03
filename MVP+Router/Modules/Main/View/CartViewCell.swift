@@ -60,7 +60,7 @@ final class CartViewCell: UITableViewCell {
     
     func configure(with model: Product) {
         productImageView.kf.indicatorType = .activity
-        productImageView.kf.setImage(with: URL(string: model.image))
+        productImageView.kf.setImage(with: URL(string: model.images[0]))
         nameProductLabel.text = model.title
         priceProductLabel.text = String(model.price) + "$"
     }

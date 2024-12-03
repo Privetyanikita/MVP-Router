@@ -7,10 +7,12 @@
 
 import Foundation
 
-class MainPresenterBuilder {
-    static func build(with view: MainViewProtocol) -> MainPresenter {
+final class MainPresenterBuilder {
+    static func build() -> MainViewController {
         let networkService = NetworkService()
         let router = Router()
-        return MainPresenter(view: view, networkService: networkService, router: router)
+        let viewController = MainViewController()
+        viewController.presenter = MainPresenter(view: viewController, networkService: networkService, router: router)
+        return viewController
     }
 }

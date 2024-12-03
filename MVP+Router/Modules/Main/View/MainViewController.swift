@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MainViewController: UIViewController {
+final class MainViewController: UIViewController {
     var presenter: MainPresenterProtocol!
 
     private lazy var tableView: UITableView = {
@@ -15,7 +15,7 @@ class MainViewController: UIViewController {
         tableView.register(CartViewCell.self, forCellReuseIdentifier: CartViewCell.reuseID)
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 148
-        tableView.showsVerticalScrollIndicator = false
+        tableView.showsVerticalScrollIndicator = true
         tableView.backgroundColor = .clear
         return tableView
     }()
@@ -42,10 +42,15 @@ class MainViewController: UIViewController {
 }
 
 extension MainViewController: MainViewProtocol {
-    
     func configureTableView(with sections: [TableViewSectionModel]) {
         tableViewBuilder = TableViewBuilder(tableView: tableView)
+        tableViewBuilder?.delegate = self
         tableViewBuilder?.sections = sections
+        tableView.reloadData()
+    }
+    
+    func appendSections(_ sections: [TableViewSectionModel]) {
+        tableViewBuilder?.sections.append(contentsOf: sections)
         tableView.reloadData()
     }
 
@@ -53,5 +58,11 @@ extension MainViewController: MainViewProtocol {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
+    }
+}
+
+extension MainViewController: TableViewBuilderDelegate {
+    func didScrollToEnd() {
+        presenter.loadNextPage()
     }
 }

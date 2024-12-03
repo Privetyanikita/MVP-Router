@@ -12,6 +12,11 @@ struct Product: Codable {
     let title: String
     let price: Double
     let description: String
-    let category: String
-    let image: String
+    let images: [String]
+    let category: Category
+}
+
+struct Category: Codable {
+    let id: Int
+    let name: String
 }

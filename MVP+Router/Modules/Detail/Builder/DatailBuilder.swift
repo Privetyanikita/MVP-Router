@@ -7,9 +7,11 @@
 
 import Foundation
 
-class DetailPresenterBuilder {
-    static func build(productID: Int, view: DetailViewProtocol) -> DetailPresenter {
+final class DetailPresenterBuilder {
+    static func build(productID: Int) -> DetailViewController {
         let networkService = NetworkService()
-        return DetailPresenter(view: view, networkService: networkService, productID: productID)
+        let viewController = DetailViewController()
+        viewController.presenter = DetailPresenter(view: viewController, networkService: networkService, productID: productID)
+        return viewController
     }
 }

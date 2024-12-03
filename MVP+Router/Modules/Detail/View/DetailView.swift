@@ -76,7 +76,7 @@ extension DetailViewController: DetailViewProtocol {
     
     func configureView(product: Product) {
         productImage.kf.indicatorType = .activity
-        productImage.kf.setImage(with: URL(string: product.image))
+        productImage.kf.setImage(with: URL(string: product.images[0]))
         titleProductLabel.text = product.title
         priceProductLabel.text = String(product.price) + "$"
         descriptionLabel.text = product.description

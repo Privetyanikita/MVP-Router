@@ -12,12 +12,11 @@ protocol RouterProtocol {
     func navigationBack(from view: DetailViewProtocol)
 }
 
-final class Router: RouterProtocol {
+final class Router: RouterProtocol { // на каждый екран свой роутер
     func navigationToDetailScreen(view: MainViewProtocol, productID: Int) {
         guard let viewController = view as? UIViewController else { return }
-        let detailViewController = DetailViewController()
-        detailViewController.presenter = DetailPresenterBuilder.build(productID: productID, view: detailViewController)
-        viewController.navigationController?.pushViewController(detailViewController, animated: true)
+        let deteilModule = DetailPresenterBuilder.build(productID: productID)
+        viewController.navigationController?.pushViewController(deteilModule, animated: true)
     }
     
     func navigationBack(from view: DetailViewProtocol) {

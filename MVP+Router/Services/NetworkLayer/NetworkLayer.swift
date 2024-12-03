@@ -17,6 +17,7 @@ enum NetworkError: Error {
 protocol NetworkServiceProtocol {
     func fetchProducts(completion: @escaping (Result<[Product], NetworkError>) -> Void)
     func fetchProductDetails(id: Int, completion: @escaping (Result<Product, NetworkError>) -> Void)
+    func fetchProductsWithPagination(offset: Int, limit: Int, completion: @escaping (Result<[Product], NetworkError>) -> Void)
 }
 
 final class NetworkService: NetworkServiceProtocol {
@@ -38,6 +39,15 @@ final class NetworkService: NetworkServiceProtocol {
     func fetchProductDetails(id: Int, completion: @escaping (Result<Product, NetworkError>) -> Void) {
         let endPoint = EndPoint.getProductsDetails(id: id)
         guard let url = createURL(for: endPoint) else {
+            completion(.failure(.noData))
+            return
+        }
+        let request = URLRequest(url: url)
+        performRequest(with: request, completion: completion)
+    }
+    
+    func fetchProductsWithPagination(offset: Int, limit: Int, completion: @escaping (Result<[Product], NetworkError>) -> Void) {
+        guard let url = createURL(for: .getProductWithLimit(offset: offset, limit: limit)) else {
             completion(.failure(.noData))
             return
         }
@@ -73,6 +83,7 @@ final class NetworkService: NetworkServiceProtocol {
         components.scheme = API.scheme
         components.host = API.host
         components.path = endPoint.path
+        components.queryItems = endPoint.queryItems
         return components.url
     }
 }

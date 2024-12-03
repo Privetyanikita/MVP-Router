@@ -16,7 +16,7 @@ protocol DetailPresenterProtocol: AnyObject {
     func viewDidLoad()
 }
 
-class DetailPresenter {
+final class DetailPresenter {
     weak var view: DetailViewProtocol?
     private var model: Product!
     private let networkService: NetworkServiceProtocol

@@ -9,18 +9,25 @@ import UIKit
 
 protocol MainViewProtocol: AnyObject {
     func configureTableView(with sections: [TableViewSectionModel])
+    func appendSections(_ sections: [TableViewSectionModel])
     func showError(message: String)
 }
 
 protocol MainPresenterProtocol: AnyObject {
     func viewDidLoad()
+    func loadNextPage()
 }
 
-class MainPresenter {
+final class MainPresenter {
     weak var view: MainViewProtocol?
-    private var model: [Product] = []
     private let networkService: NetworkServiceProtocol
     private let router: RouterProtocol
+    
+    private var products: [Product] = []
+    private var isLoading = false
+    private var hasMoreProducts = true
+    private var offset = 0
+    private let limit = 10
 
     init(view: MainViewProtocol, networkService: NetworkServiceProtocol, router: RouterProtocol) {
         self.view = view
@@ -28,18 +35,49 @@ class MainPresenter {
         self.router = router
     }
 
-    private func fetchProducts() {
-        networkService.fetchProducts { [weak self] result in
+    private func fetchProductsWithLimit() {
+        guard !isLoading, hasMoreProducts else { return }
+        isLoading = true
+
+        networkService.fetchProductsWithPagination(offset: offset, limit: limit) { [weak self] result in
             DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.isLoading = false
                 switch result {
-                case .success(let products):
-                    self?.model = products
-                    self?.view?.configureTableView(with: self?.createSections(from: products) ?? [])
+                case .success(let newProducts):
+                    if newProducts.isEmpty {
+                        self.hasMoreProducts = false
+                        print("No more products to load")
+                        return
+                    }
+                    self.products.append(contentsOf: newProducts)
+                    self.offset += 10
+                    self.updateView(with: self.products)
                 case .failure(let error):
-                    self?.view?.showError(message: "Failed to load products: \(error.localizedDescription)")
+                    self.view?.showError(message: "Failed to load products: \(error.localizedDescription)")
                 }
             }
         }
+    }
+       
+    private func fetchProducts(){// уже не надо, но пускай будет
+        networkService.fetchProducts{ [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.isLoading = false
+                switch result {
+                case .success(let newProducts):
+                    print(newProducts.count)
+                case .failure(let error):
+                    self.view?.showError(message: "Failed to load products: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    private func updateView(with newProducts: [Product]) {
+        guard !newProducts.isEmpty else { return }
+        view?.configureTableView(with: createSections(from: newProducts))
     }
 
     private func createSections(from products: [Product]) -> [TableViewSectionModel] {
@@ -51,8 +89,8 @@ class MainPresenter {
                     cell.configure(with: product)
                 },
                 onSelect: { [weak self] in
-                    guard let self = self else { return }
-                    self.router.navigationToDetailScreen(view: self.view!, productID: product.id)
+                    guard let self, let view else { return }
+                    self.router.navigationToDetailScreen(view: view, productID: product.id)
                 }
             )
         }
@@ -62,6 +100,11 @@ class MainPresenter {
 
 extension MainPresenter: MainPresenterProtocol{    
     func viewDidLoad() {
-        fetchProducts()
+        fetchProductsWithLimit()
+    }
+    
+    func loadNextPage() {
+        guard hasMoreProducts else { return }
+        fetchProductsWithLimit()
     }
 }
