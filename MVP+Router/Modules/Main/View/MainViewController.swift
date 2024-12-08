@@ -20,7 +20,11 @@ final class MainViewController: UIViewController {
         return tableView
     }()
 
-    private var tableViewBuilder: TableViewBuilder?
+    private lazy var tableViewBuilder: TableViewBuilder? = {
+        let builder = TableViewBuilder(tableView: tableView)
+        builder.delegate = self
+        return builder
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,8 +47,6 @@ final class MainViewController: UIViewController {
 
 extension MainViewController: MainViewProtocol {
     func configureTableView(with sections: [TableViewSectionModel]) {
-        tableViewBuilder = TableViewBuilder(tableView: tableView)
-        tableViewBuilder?.delegate = self
         tableViewBuilder?.sections = sections
         tableView.reloadData()
     }
